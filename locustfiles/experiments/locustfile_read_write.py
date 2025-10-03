@@ -10,10 +10,6 @@ class FlaskAPIUser(HttpUser):
     # Temps d'attente entre les requêtes (1 à 3 secondes)
     wait_time = between(1, 3)
     
-    def on_start(self):
-        """Called every time a Locust user spawns"""
-        print("Welcome, user!")
-    
     # Proportion d'exécution 1:1:1, ce qui signifie : 1/3, 1/3, 1/3 (30 % des appels à chacun)
     # TODO: changez la proportion d'exécution de cette méthode
     @task(1) 

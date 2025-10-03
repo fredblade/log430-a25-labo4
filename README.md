@@ -14,6 +14,8 @@ Dans ce laboratoire, on continuera à utiliser la même version du « store mana
 
 > ⚠️ **IMPORTANT** : Les documents ARC42 et ADR contenus dans ce dépôt sont identiques à ceux du laboratoire 03, car nous ne modifions pas l'architecture de l'application dans ce laboratoire.
 
+> 📝 NOTE : À partir de ce laboratoire, nous vous encourageons à utiliser la bibliothèque `logging` plutôt que la commande `print`. Bien que `print` fonctionne bien pour le débogage, l'utilisation d'un logger est une bonne pratique de développement logiciel car il offre [plusieurs avantages lorsque notre application entre en production](https://www.geeksforgeeks.org/python/difference-between-logging-and-print-in-python/). Vous trouverez un exemple d'utilisation du `logging` dans `src/stocks/commands/write_stock.py`.
+
 ### 1. Créez un nouveau dépôt à partir du gabarit et clonez le dépôt
 ```bash
 git clone https://github.com/[votredepot]/log430-a25-labo4
