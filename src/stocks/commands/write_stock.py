@@ -9,7 +9,7 @@ from stocks.models.product import Product
 from stocks.models.stock import Stock
 from db import get_redis_conn, get_sqlalchemy_session
 
-logger = Logger.start("store_manager")
+logger = Logger.get_instance("store_manager")
 
 def set_stock_for_product(product_id, quantity):
     """Set stock quantity for product in MySQL"""

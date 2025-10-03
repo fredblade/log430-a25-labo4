@@ -10,7 +10,7 @@ class Logger:
     """This class logs messages to the terminal """
     
     @staticmethod
-    def start(name: str, level=logging.DEBUG):
+    def get_instance(name: str, level=logging.DEBUG, log_to_file=False):
         """ Set up a logger to stdout. Works for both the Docker terminal and the host machine terminal """
         logger = logging.getLogger(name)
         logger.setLevel(level)
@@ -20,7 +20,7 @@ class Logger:
         if logger.handlers:
             return logger
         
-        # Format for logs
+        # Format of the string that will be logged
         formatter = logging.Formatter(
             fmt='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
             datefmt='%Y-%m-%d %H:%M:%S'
@@ -31,6 +31,12 @@ class Logger:
         console_handler.setLevel(level)
         console_handler.setFormatter(formatter)
         logger.addHandler(console_handler)
+
+        # File handler (.log file, optional)
+        if (log_to_file):
+            fileHandler = logging.FileHandler("store_manager.log")
+            fileHandler.setFormatter(formatter)
+            logger.addHandler(fileHandler)
         
         # Ensure root logger doesn't interfere
         logging.root.setLevel(logging.WARNING)

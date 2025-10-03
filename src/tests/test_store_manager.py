@@ -22,7 +22,7 @@ def test_health(client):
 
 def test_stock_flow(client):
     """Smoke test for complete stock management flow"""
-    logger = Logger.start("test")
+    logger = Logger.get_instance("test")
     
     # 1. Create a product (POST /products)
     product_data = {
