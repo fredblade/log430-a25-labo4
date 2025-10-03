@@ -1,5 +1,5 @@
 """
-Centralized logging configuration for the application
+Logger
 SPDX-License-Identifier: LGPL-3.0-or-later
 Auteurs: Gabriel C. Ullmann, Fabio Petrillo, 2025
 """
@@ -7,11 +7,11 @@ import logging
 import sys
 
 class Logger:
-    """Centralized logger configuration"""
+    """This class logs messages to the terminal """
     
     @staticmethod
     def start(name: str, level=logging.DEBUG):
-        """ Set up a logger with both console and file handlers """
+        """ Set up a logger to stdout. Works for both the Docker terminal and the host machine terminal """
         logger = logging.getLogger(name)
         logger.setLevel(level)
         logger.propagate = False
