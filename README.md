@@ -86,7 +86,7 @@ Lancez le test et observez les statistiques et graphiques dans Locust (onglet `C
 ### 6. Écrivez un nouveau test de charge avec Locust
 Dans le répertoire `locustfiles/experiments/locustfile_read_write.py`, complétez le script `locustfile_read_write.py` pour ajouter une commande en utilisant des valeurs aléatoires et une proportion d'exécution des méthodes `@task` à 66% lectures, 33% écritures (2/3, 1/3, 1/3). Plus d'informations sur la proportion d'exécution des appels de chaque méthode `@task` [dans la documentation officielle à Locust](https://docs.locust.io/en/stable/writing-a-locustfile.html#task-decorator).
 
-Finalement, copiez le code modifié de `locustfiles/experiments/locustfile_read_write.py` à `locustfiles/locustfile.py` et testez-le. Si cela fonctionne, passez à l'activité 7.
+Finalement, copiez le code modifié de `locustfiles/experiments/locustfile_read_write.py` à `locustfiles/locustfile.py`. **Reconstruisez le conteneur**, puis redémarrez le conteneur Docker et relancez le test Locust. Si cela fonctionne, passez à l'activité 7.
 
 ### 7. Augmentez la charge
 Augmentez progressivement le nombre d'utilisateurs jusqu'à ce que l'application échoue (timeouts, erreurs 500, etc.).
