@@ -19,8 +19,10 @@ def add_order(user_id: int, items: list):
     session = get_sqlalchemy_session()
 
     try:
-        products_query = session.query(Product).filter(Product.id.in_(product_ids)).all()
-        price_map = {product.id: product.price for product in products_query}
+        product_prices = {}
+        for product_id in product_ids:
+            products = session.query(Product).filter(Product.id == product_id).all()
+            product_prices[product_id] = products[0].price
         total_amount = 0
         order_items = []
         
@@ -28,10 +30,10 @@ def add_order(user_id: int, items: list):
             pid = item["product_id"]
             qty = item["quantity"]
 
-            if pid not in price_map:
+            if pid not in product_prices:
                 raise ValueError(f"Product ID {pid} not found in database.")
 
-            unit_price = price_map[pid]
+            unit_price = product_prices[pid]
             total_amount += unit_price * qty
 
             order_items.append({
