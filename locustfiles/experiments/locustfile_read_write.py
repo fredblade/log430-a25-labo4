@@ -15,7 +15,7 @@ class FlaskAPIUser(HttpUser):
     @task(1) 
     def orders(self):
         """Test POST /orders endpoint (write)"""
-        # TODO: ajoutez des IDs aléatoires de 1-4
+        # TODO: ajoutez des IDs aléatoires de 1-3
         mock_order = {
             "user_id": 0,
             "items": [{"product_id": 0, "quantity": 1}] 
