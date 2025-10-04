@@ -9,6 +9,7 @@ from stocks.models.product import Product
 from stocks.models.stock import Stock
 from db import get_redis_conn, get_sqlalchemy_session
 
+# Si vous souhaitez en savoir plus sur le processus de logging, rendez-vous dans src/logger.py
 logger = Logger.get_instance("store_manager")
 
 def set_stock_for_product(product_id, quantity):

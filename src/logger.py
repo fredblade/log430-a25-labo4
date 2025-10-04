@@ -7,7 +7,11 @@ import logging
 import sys
 
 class Logger:
-    """This class logs messages to the terminal """
+    """
+    This class logs messages to the terminal. 
+    
+    If you would like to view the logs as they are written to a file rather than in the terminal, set the argument log_to_file to True and run `tail -f src/store_manager.log` in your Linux terminal.
+    """
     
     @staticmethod
     def get_instance(name: str, level=logging.DEBUG, log_to_file=False):
@@ -16,11 +20,9 @@ class Logger:
         logger.setLevel(level)
         logger.propagate = False
         
-        # Prevent duplicate handlers if logger already exists
         if logger.handlers:
             return logger
         
-        # Format of the string that will be logged
         formatter = logging.Formatter(
             fmt='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
             datefmt='%Y-%m-%d %H:%M:%S'
@@ -32,7 +34,7 @@ class Logger:
         console_handler.setFormatter(formatter)
         logger.addHandler(console_handler)
 
-        # File handler (.log file, optional)
+        # File handler (.log file)
         if (log_to_file):
             fileHandler = logging.FileHandler("store_manager.log")
             fileHandler.setFormatter(formatter)
