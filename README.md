@@ -94,7 +94,7 @@ Augmentez progressivement le nombre d'utilisateurs jusqu'à ce que l'application
 > 💡 **Question 2** : À partir de combien d'utilisateurs votre application cesse-t-elle de répondre correctement (avec MySQL) ? Illustrez votre réponse à l'aide des graphiques Locust.
 
 ### 8. Optimisez la lecture des données des articles
-Nous pourrions obtenir une performance supérieure simplement en utilisant un cache en mémoire tel que Redis. Cependant, il est toujours raisonnable de vérifier si nous pouvons d'abord optimiser notre code existant. L'optimisation du code est généralement plus abordable et plus efficace que changer de base de données, serveur Web ou augmenter les ressources de calcul (RAM/CPU) sur un serveur on-premises ou en nuage.
+Avant d'envisager un changement de base de données, de serveur Web ou une augmentation des ressources matérielles (RAM/CPU) sur notre serveur on-premises ou en nuage, il est raisonnable de vérifier si une optimisation du code existant est possible. Cette approche présente généralement le meilleur rapport coût-efficacité.
 
 Dans `orders/commands/write_order.py`, si nous regardons attentivement la fonction `add_order`, nous verrons qu'elle ne récupère pas les informations des articles de manière efficace. Si nous avions, par exemple, 100 articles dans notre commande, la fonction effectuerait 100 requêtes à la base de données pour chercher les informations sur les articles ([problème N+1](https://planetscale.com/blog/what-is-n-1-query-problem-and-how-to-solve-it)). À fur et a mesure que le nombre d'articles augmente dans la base, le temps de recherche augmente également.
 
@@ -106,26 +106,50 @@ for product_id in product_ids:
     product_prices[product_id] = product[0].price
 ```
 
-Modifiez la méthode `add_order` de façon à collecter et récupérer tous les `product_ids` en une seule requête. Utilisez la fonction `in_` à SQLAlchemy.
+Modifiez la méthode `add_order` de façon à collecter et récupérer tous les `product_ids` en une seule requête. Nous utiliserons toujours une boucle `for`, mais la requête de base de données **ne se trouve pas dans la boucle**.
 ```python
 # ✅ Code optimisé
 product_prices = {}
-product_ids = [1, 2, 3] # Collectez les product_ids des OrderItems
+product_ids = [1, 2, 3] # Collectez le product_id de chaque OrderItem
 products = session.query(Product).filter(Product.id.in_(product_ids)).all()
-# Parcourez la liste, extrayez le prix de chaque article
+for product in products:
+    product_prices[product.id] = product.price
 ```
 
-> 📝 NOTE : Ceci n'est qu'un exemple trivial d'optimisation dans une seule méthode. Dans une application réelle, il faut parfois optimiser des algorithmes complèxes, des fonctions mathématiques, des structures de données, ou effectuer des ajustements dans la base de données, comme la [création d'index](https://www.w3schools.com/mysql/mysql_create_index.asp) ou la [normalisation](https://www.ibm.com/fr-fr/think/topics/database-normalization).
+> 📝 NOTE : Ceci n'est qu'un exemple trivial d'optimisation de lecture. Dans une application réelle, il faut parfois effectuer des ajustements plus granulaires dans la base de données, comme la [création d'index](https://www.w3schools.com/mysql/mysql_create_index.asp) ou la [normalisation](https://www.ibm.com/fr-fr/think/topics/database-normalization).
 
 Relancez les tests avec Locust (avec les mêmes paramètres de la dernière activité).
 
 > 💡 **Question 3** : À partir de combien d'utilisateurs votre application cesse-t-elle de répondre correctement (avec MySQL + Optimisation) ? Illustrez votre réponse à l'aide des graphiques Locust.
 
 ### 9. Réactivez Redis
-Étant donné que nous avons fait de notre mieux pour identifier les obstructions dans notre application (lectures de la base de données) et l'optimiser, nous pouvons désormais mettre en place un cache en memóire pour aller encore plus loin. Dans `queries/read_order.py`, remplacez l'appel à `get_highest_spending_users_mysql` par `get_highest_spending_users_redis`. Également, remplacez l'appel à `get_best_selling_products_mysql` par `get_best_selling_products_redis`.
+Dans `queries/read_order.py`, remplacez l'appel à `get_highest_spending_users_mysql` par `get_highest_spending_users_redis`. Également, remplacez l'appel à `get_best_selling_products_mysql` par `get_best_selling_products_redis`.
+
+Cependant, avant de relancer les tests, nous devons optimiser la génération des rapports. Même si Redis est en mémoire et que l'accès est rapide, nous l'interrogeons très fréquemment pour obtenir la liste de commandes (`r.keys("order:*")`), puis nous parcourons cette liste, récupérons l'objet commande (`r.hgetall(key)`) et le traitons pour générer le rapport. Cette approche prend trop de temps, et la durée nécessaire augmente proportionnellement avec la quantité de commandes et d'articles par commande. Pour résoudre ce problème, nous devons conserver le rapport en cache pendant une période déterminée. Le rapport ne sera désormais plus mis à jour en temps réel, mais cette solution nous permettra de servir des rapports très récents de manière quasi instantanée.
+
+Dans `orders/commands/read_order.py`, à la fin de la méthode `get_highest_spending_users_redis`, stockez le rapport dans le cache avant de le retourner au contrôleur :
+```python
+r.hset('reports:highest_spending_users', mapping=result)
+r.expire("reports:highest_spending_users", 60) # invalider le cache toutes les 60 secondes
+return result
+```
+
+Au début de la méthode `get_highest_spending_users_redis`, vérifiez si le rapport existe déjà dans le cache. Si c'est le cas, retournez immédiatement l'objet en cache. Sinon, exécutez les étapes nécessaires pour générer le rapport :
+```python
+report_in_cache = r.hget("reports:highest_spending_users")
+if report_in_cache:
+    return json.loads(report_in_cache)
+else:
+    # Obtenir les clés des commandes 
+    # Générer le rapport 
+    # Trier (décroissant), limite X
+    return result
+```
+
+Également, appliquez cette optimisation au rapport `best_selling_products`.
 
 ### 10. Testez la charge encore une fois
-Augmentez progressivement le nombre d'utilisateurs jusqu'à ce que l'application échoue (timeouts, erreurs 500, etc.). Regardez l'onglet `Failures` pour plus d'informations sur les erreurs.
+Augmentez progressivement le nombre d'utilisateurs jusqu'à ce que l'application échoue (par exemple, jusqu'à obtenir une quantité importante d'erreurs 500, de timeouts, etc.). Regardez l'onglet `Failures` pour plus d'informations sur les erreurs.
 
 > 💡 **Question 4** : À partir de combien d'utilisateurs votre application cesse-t-elle de répondre correctement (avec Redis) ? Quelle est la latence et le taux d'erreur observés ? Illustrez votre réponse à l'aide des graphiques Locust.
 

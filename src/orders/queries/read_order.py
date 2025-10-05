@@ -74,6 +74,7 @@ def get_best_selling_products_mysql():
 def get_highest_spending_users_redis():
     """Get report of highest spending users from Redis"""
     result = []
+    # TODO: optimiser
     try: 
         r = get_redis_conn()
         limit = 10
@@ -103,7 +104,7 @@ def get_highest_spending_users_redis():
 def get_best_selling_products_redis():
     """Get report of best selling products by quantity sold from Redis"""
     result = []
-
+    # TODO: optimiser
     try:
         r = get_redis_conn()
         limit = 10

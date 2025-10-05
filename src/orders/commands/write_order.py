@@ -19,6 +19,7 @@ def add_order(user_id: int, items: list):
     session = get_sqlalchemy_session()
 
     try:
+        # TODO: optimiser
         product_prices = {}
         for product_id in product_ids:
             products = session.query(Product).filter(Product.id == product_id).all()
