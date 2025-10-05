@@ -89,7 +89,7 @@ Dans le répertoire `locustfiles/experiments/locustfile_read_write.py`, complét
 Finalement, copiez le code modifié de `locustfiles/experiments/locustfile_read_write.py` à `locustfiles/locustfile.py`. **Reconstruisez le conteneur**, puis redémarrez le conteneur Docker et relancez le test Locust. Si cela fonctionne, passez à l'activité 7.
 
 ### 7. Augmentez la charge
-Augmentez progressivement le nombre d'utilisateurs jusqu'à ce que l'application échoue (timeouts, erreurs 500, etc.).
+Augmentez progressivement le nombre d'utilisateurs jusqu'à ce que l'application échoue (par exemple, jusqu'à obtenir une quantité importante d'erreurs 500, de timeouts, etc.). Regardez l'onglet `Failures` pour plus d'informations sur les erreurs.
 
 > 💡 **Question 2** : À partir de combien d'utilisateurs votre application cesse-t-elle de répondre correctement (avec MySQL) ? Illustrez votre réponse à l'aide des graphiques Locust.
 
@@ -149,7 +149,7 @@ else:
 Également, appliquez cette optimisation au rapport `best_selling_products`.
 
 ### 10. Testez la charge encore une fois
-Augmentez progressivement le nombre d'utilisateurs jusqu'à ce que l'application échoue (par exemple, jusqu'à obtenir une quantité importante d'erreurs 500, de timeouts, etc.). Regardez l'onglet `Failures` pour plus d'informations sur les erreurs.
+Relancez les tests avec Locust (avec les mêmes paramètres de la dernière activité). Augmentez progressivement le nombre d'utilisateurs si nécessaire.
 
 > 💡 **Question 4** : À partir de combien d'utilisateurs votre application cesse-t-elle de répondre correctement (avec Redis) ? Quelle est la latence et le taux d'erreur observés ? Illustrez votre réponse à l'aide des graphiques Locust.
 
