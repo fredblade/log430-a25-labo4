@@ -4,11 +4,15 @@ SPDX - License - Identifier: LGPL - 3.0 - or -later
 Auteurs : Gabriel C. Ullmann, Fabio Petrillo, 2025
 """
 import json
+import time
 from db import get_redis_conn, get_sqlalchemy_session
 from collections import defaultdict
+from logger import Logger
 from orders.models.order import Order
 from orders.models.order_item import OrderItem
 from sqlalchemy.sql import func
+
+logger = Logger.get_instance("order_reports")
 
 def get_order_by_id(order_id):
     """Get order by ID from Redis"""
@@ -74,8 +78,9 @@ def get_best_selling_products_mysql():
 def get_highest_spending_users_redis():
     """Get report of highest spending users from Redis"""
     result = []
-    # TODO: optimiser
     try: 
+        start_time = time.time()
+        # TODO: optimiser
         r = get_redis_conn()
         limit = 10
         order_keys = r.keys("order:*")
@@ -99,13 +104,16 @@ def get_highest_spending_users_redis():
     except Exception as e:
         return {'error': str(e)}
 
+    end_time = time.time()
+    logger.debug(f"Executed in {end_time - start_time} seconds")
     return result
 
 def get_best_selling_products_redis():
     """Get report of best selling products by quantity sold from Redis"""
     result = []
-    # TODO: optimiser
     try:
+        start_time = time.time()
+        # TODO: optimiser
         r = get_redis_conn()
         limit = 10
         order_keys = r.keys("order:*")
@@ -134,7 +142,9 @@ def get_best_selling_products_redis():
 
     except Exception as e:
         return {'error': str(e)}
-
+    
+    end_time = time.time()
+    logger.debug(f"Executed in {end_time - start_time} seconds")
     return result
 
 def get_highest_spending_users():

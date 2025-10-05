@@ -3,12 +3,16 @@ Orders (write-only model)
 SPDX - License - Identifier: LGPL - 3.0 - or -later
 Auteurs : Gabriel C. Ullmann, Fabio Petrillo, 2025
 """
+import time
 import json
+from logger import Logger
 from orders.models.order import Order
 from stocks.models.product import Product
 from orders.models.order_item import OrderItem
 from stocks.commands.write_stock import check_in_items_to_stock, check_out_items_from_stock, update_stock_redis
 from db import get_sqlalchemy_session, get_redis_conn
+
+logger = Logger.get_instance("add_order")
 
 def add_order(user_id: int, items: list):
     """Insert order with items in MySQL, keep Redis in sync"""
@@ -19,6 +23,7 @@ def add_order(user_id: int, items: list):
     session = get_sqlalchemy_session()
 
     try:
+        start_time = time.time()
         # TODO: optimiser
         product_prices = {}
         for product_id in product_ids:
@@ -66,6 +71,8 @@ def add_order(user_id: int, items: list):
         # Insert order into Redis
         update_stock_redis(order_items, '-')
         add_order_to_redis(order_id, user_id, total_amount, items)
+        end_time = time.time()
+        logger.debug(f"Executed in {end_time - start_time} seconds")
         return order_id
 
     except Exception as e:
