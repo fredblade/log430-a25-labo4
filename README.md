@@ -67,6 +67,11 @@ def post_orders():
     counter_orders.inc()
 ```
 
+Reconstruisez et puis redémarrez le conteneur Docker.
+```bash
+docker compose down -v && docker compose up -d --build                     
+```
+
 ### 4. Observez les métriques dans Prometheus
 Dans Postman, faites quelques requêtes à `POST /orders`. Ensuite, accédez à Prometheus sur `http://localhost:9090` et exécutez une requête (query) à `orders_total`. Vous devriez voir une valeur numérique associée à la variable. Faites la même chose pour les deux autres `Counters`. Par exemple, si vous avez nommé le compteur `highest_spenders`, exécutez une requête à `highest_spenders_total`. Cliquez sur `Graph` pour voir la représentation visuelle de chaque variable. Faites quelques requêtes de plus pour voir le changement des variables.
 
@@ -86,7 +91,11 @@ Lancez le test et observez les statistiques et graphiques dans Locust (onglet `C
 ### 6. Écrivez un nouveau test de charge avec Locust
 Dans le répertoire `locustfiles/experiments/locustfile_read_write.py`, complétez le script `locustfile_read_write.py` pour ajouter une commande en utilisant des valeurs aléatoires et une proportion d'exécution des méthodes `@task` à 66% lectures, 33% écritures (2/3, 1/3, 1/3). Plus d'informations sur la proportion d'exécution des appels de chaque méthode `@task` [dans la documentation officielle à Locust](https://docs.locust.io/en/stable/writing-a-locustfile.html#task-decorator).
 
-Finalement, copiez le code modifié de `locustfiles/experiments/locustfile_read_write.py` à `locustfiles/locustfile.py`. **Reconstruisez le conteneur**, puis redémarrez le conteneur Docker et relancez le test Locust. Si cela fonctionne, passez à l'activité 7.
+Finalement, copiez le code modifié de `locustfiles/experiments/locustfile_read_write.py` à `locustfiles/locustfile.py`. Reconstruisez et puis redémarrez le conteneur Docker.
+```bash
+docker compose down -v && docker compose up -d --build                     
+```
+Relancez les tests Locust avec les mêmes paramètres de la dernière activité. Si cela fonctionne, passez à l'activité 7.
 
 ### 7. Augmentez la charge
 Augmentez progressivement le nombre d'utilisateurs jusqu'à ce que l'application échoue (par exemple, jusqu'à obtenir une quantité importante d'erreurs 500, de timeouts, etc.). Regardez l'onglet `Failures` pour plus d'informations sur les erreurs.
@@ -118,9 +127,14 @@ for product in products:
 
 > 📝 NOTE : Ceci n'est qu'un exemple trivial d'optimisation de lecture. Dans une application réelle, il faut parfois effectuer des ajustements plus granulaires dans la base de données, comme la [création d'index](https://www.w3schools.com/mysql/mysql_create_index.asp) ou la [normalisation](https://www.ibm.com/fr-fr/think/topics/database-normalization).
 
-Relancez les tests avec Locust (avec les mêmes paramètres de la dernière activité).
+Reconstruisez et puis redémarrez le conteneur Docker.
+```bash
+docker compose down -v && docker compose up -d --build                     
+```
 
-> 💡 **Question 3** : À partir de combien d'utilisateurs votre application cesse-t-elle de répondre correctement (avec MySQL + Optimisation) ? Illustrez votre réponse à l'aide des graphiques Locust.
+Relancez les tests Locust avec les mêmes paramètres de la dernière activité.
+
+> 💡 **Question 3** : À partir de combien d'utilisateurs votre application cesse-t-elle de répondre correctement (avec MySQL + optimisation) ? Illustrez votre réponse à l'aide des graphiques Locust.
 
 ### 9. Réactivez Redis
 Dans `queries/read_order.py`, remplacez l'appel à `get_highest_spending_users_mysql` par `get_highest_spending_users_redis`. Également, remplacez l'appel à `get_best_selling_products_mysql` par `get_best_selling_products_redis`.
@@ -149,18 +163,28 @@ else:
 Également, appliquez cette optimisation au rapport `best_selling_products`.
 
 ### 10. Testez la charge encore une fois
-Relancez les tests avec Locust (avec les mêmes paramètres de la dernière activité). Augmentez progressivement le nombre d'utilisateurs si nécessaire.
+Reconstruisez et puis redémarrez le conteneur Docker.
+```bash
+docker compose down -v && docker compose up -d --build                     
+```
 
-> 💡 **Question 4** : À partir de combien d'utilisateurs votre application cesse-t-elle de répondre correctement (avec Redis) ? Quelle est la latence et le taux d'erreur observés ? Illustrez votre réponse à l'aide des graphiques Locust.
+Relancez les tests Locust avec les mêmes paramètres de la dernière activité. Si nécessaire, augmentez progressivement le nombre d'utilisateurs jusqu'à ce que l'application échoue.
+
+> 💡 **Question 4** : À partir de combien d'utilisateurs votre application cesse-t-elle de répondre correctement (avec Redis + optimisation) ? Quelle est la latence et le taux d'erreur observés ? Illustrez votre réponse à l'aide des graphiques Locust.
 
 ### 11. Testez l'équilibrage de charge (load balancing) avec Nginx
 Pour tester le scénario suivant, utilisez le répertoire `load-balancer-config` :
 - Copiez le texte dans `docker-compose-to-copy-paste.txt` et collez-le dans `docker-compose.yml`
 - Créez un fichier `nginx.conf` dans le répertoire racine du projet.
 - Copiez le texte dans `nginx-conf-to-copy-paste.txt` et collez-le dans un fichier `nginx.conf`
-Observez les modifications apportées à `docker-compose.yml`. **Reconstruisez le conteneur**, puis redémarrez le conteneur Docker. Relancez ensuite les tests avec Locust (avec les mêmes paramètres de la dernière activité).
+Observez les modifications apportées à `docker-compose.yml`. Ensuite, reconstruisez et puis redémarrez le conteneur Docker.
+```bash
+docker compose down -v && docker compose up -d --build                     
+```
 
-> 💡 **Question 5** : À partir de combien d'utilisateurs votre application cesse-t-elle de répondre correctement (avec Redis + Nginx load balancing) ? Quelle est la latence moyenne (50ème percentile) et le taux d'erreur observés ? Illustrez votre réponse à l'aide des graphiques Locust.
+Relancez les tests Locust avec les mêmes paramètres de la dernière activité.
+
+> 💡 **Question 5** : À partir de combien d'utilisateurs votre application cesse-t-elle de répondre correctement (avec Redis + Optimisation + Nginx load balancing) ? Quelle est la latence moyenne (50ème percentile) et le taux d'erreur observés ? Illustrez votre réponse à l'aide des graphiques Locust.
 
 > 💡 **Question 6** : Avez-vous constaté une amélioration des performances à mesure que nous avons mis en œuvre différentes approches d'optimisation ? Quelle a été la meilleure approche ? Justifiez votre réponse en vous référant aux réponses précédentes.
 
