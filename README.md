@@ -125,7 +125,7 @@ for product in products:
     product_prices[product.id] = product.price
 ```
 
-> 📝 NOTE : Ceci n'est qu'un exemple trivial d'optimisation de lecture. Dans une application réelle, il faut parfois effectuer des ajustements plus granulaires dans la base de données, comme la [création d'index](https://www.w3schools.com/mysql/mysql_create_index.asp), la [normalisation](https://www.ibm.com/fr-fr/think/topics/database-normalization). Nous pouvons également augmenter le [nombre de connexions disponibles dans MySQL](https://dev.mysql.com/doc/refman/8.4/en/server-system-variables.html#sysvar_max_connections). Il ne s'agit pas vraiment d'une optimisation, mais plutôt d'une solution provisoire.
+> 📝 NOTE : Ceci n'est qu'un exemple trivial d'optimisation de lecture. Dans une application réelle, il faut parfois effectuer des ajustements plus granulaires dans la base de données, comme la [création d'index](https://www.w3schools.com/mysql/mysql_create_index.asp) et la [normalisation](https://www.ibm.com/fr-fr/think/topics/database-normalization). Nous pouvons également augmenter le [nombre de connexions disponibles dans MySQL](https://dev.mysql.com/doc/refman/8.4/en/server-system-variables.html#sysvar_max_connections). Il ne s'agit pas vraiment d'une optimisation, mais plutôt d'une solution provisoire.
 
 Reconstruisez et puis redémarrez le conteneur Docker.
 ```bash
