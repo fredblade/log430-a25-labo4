@@ -89,7 +89,7 @@ Lancez le test et observez les statistiques et graphiques dans Locust (onglet `C
 > 💡 **Question 1** : Quelle est la latence moyenne (50ème percentile) et le taux d'erreur observés avec 100 utilisateurs ? Illustrez votre réponse à l'aide des graphiques Locust (onglet `Charts`).
 
 ### 6. Écrivez un nouveau test de charge avec Locust
-Dans le répertoire `locustfiles/experiments/locustfile_read_write.py`, complétez le script `locustfile_read_write.py` pour ajouter une commande en utilisant des valeurs aléatoires et une proportion d'exécution des méthodes `@task` à 66% lectures, 33% écritures (2/3, 1/3, 1/3). Plus d'informations sur la proportion d'exécution des appels de chaque méthode `@task` [dans la documentation officielle à Locust](https://docs.locust.io/en/stable/writing-a-locustfile.html#task-decorator).
+Dans le répertoire `locustfiles/experiments/locustfile_read_write.py`, complétez le script `locustfile_read_write.py` pour ajouter une commande en utilisant des valeurs aléatoires et une proportion d'exécution des méthodes `@task` à 66% lectures, 33% écritures (proportion d'exécution des fonctions : 2:1:1). Plus d'informations sur la proportion d'exécution des appels de chaque méthode `@task` [dans la documentation officielle à Locust](https://docs.locust.io/en/stable/writing-a-locustfile.html#task-decorator).
 
 Finalement, copiez le code modifié de `locustfiles/experiments/locustfile_read_write.py` à `locustfiles/locustfile.py`. Reconstruisez et puis redémarrez le conteneur Docker.
 ```bash
@@ -150,7 +150,7 @@ return result
 
 Au début de la méthode `get_highest_spending_users_redis`, vérifiez si le rapport existe déjà dans le cache. Si c'est le cas, retournez immédiatement l'objet en cache. Sinon, exécutez les étapes nécessaires pour générer le rapport :
 ```python
-report_in_cache = r.hget("reports:highest_spending_users")
+report_in_cache = r.hgetall("reports:highest_spending_users")
 if report_in_cache:
     return json.loads(report_in_cache)
 else:
