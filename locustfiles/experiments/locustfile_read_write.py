@@ -11,7 +11,6 @@ class FlaskAPIUser(HttpUser):
     wait_time = between(1, 3)
     
     # Proportion d'exécution 1:1:1, ce qui signifie : 1/3, 1/3, 1/3 (30 % des appels à chacun)
-    # TODO: changez la proportion d'exécution de cette méthode
     @task(1) 
     def orders(self):
         """Test POST /orders endpoint (write)"""
@@ -44,7 +43,6 @@ class FlaskAPIUser(HttpUser):
                 response.failure(f"Invalid JSON response: {response.text}")
 
     @task(1) 
-    # TODO: changez la proportion d'exécution de cette méthode
     def highest_spenders(self):
         """Test GET /orders/reports/highest-spenders endpoint (read)"""
         with self.client.get("/orders/reports/highest-spenders", catch_response=True) as response:
@@ -61,7 +59,6 @@ class FlaskAPIUser(HttpUser):
                 response.failure(f"Invalid JSON response: {response.text}")
 
     @task(1) 
-    # TODO: changez la proportion d'exécution de cette méthode
     def best_sellers(self):
         """Test GET /orders/reports/best-sellers endpoint (read)"""
         with self.client.get("/orders/reports/best-sellers", catch_response=True) as response:

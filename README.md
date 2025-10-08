@@ -89,7 +89,7 @@ Lancez le test et observez les statistiques et graphiques dans Locust (onglet `C
 > 💡 **Question 1** : Quelle est la latence moyenne (50ème percentile) et le taux d'erreur observés avec 100 utilisateurs ? Illustrez votre réponse à l'aide des graphiques Locust (onglet `Charts`).
 
 ### 6. Écrivez un nouveau test de charge avec Locust
-Dans le répertoire `locustfiles/experiments/locustfile_read_write.py`, complétez le script `locustfile_read_write.py` pour ajouter une commande en utilisant des valeurs aléatoires et une proportion d'exécution des méthodes `@task` à 66% lectures, 33% écritures (proportion d'exécution des fonctions : 2:1:1). Plus d'informations sur la proportion d'exécution des appels de chaque méthode `@task` [dans la documentation officielle à Locust](https://docs.locust.io/en/stable/writing-a-locustfile.html#task-decorator).
+Dans le répertoire `locustfiles/experiments/locustfile_read_write.py`, complétez le script `locustfile_read_write.py` pour ajouter une commande en utilisant des valeurs aléatoires et une proportion d'exécution des méthodes `@task` à 66% lectures, 33% écritures (proportion d'exécution des fonctions : 1:1:1). Plus d'informations sur la proportion d'exécution des appels de chaque méthode `@task` [dans la documentation officielle à Locust](https://docs.locust.io/en/stable/writing-a-locustfile.html#task-decorator).
 
 Finalement, copiez le code modifié de `locustfiles/experiments/locustfile_read_write.py` à `locustfiles/locustfile.py`. Reconstruisez et puis redémarrez le conteneur Docker.
 ```bash
@@ -141,7 +141,7 @@ Dans `queries/read_order.py`, remplacez l'appel à `get_highest_spending_users_m
 
 Cependant, avant de relancer les tests, nous devons optimiser la génération des rapports. Même si Redis est en mémoire et que l'accès est rapide, nous l'interrogeons très fréquemment pour obtenir la liste de commandes (`r.keys("order:*")`), puis nous parcourons cette liste, récupérons l'objet commande (`r.hgetall(key)`) et le traitons pour générer le rapport. Cette approche prend trop de temps, et la durée nécessaire augmente proportionnellement avec la quantité de commandes et d'articles par commande. Pour résoudre ce problème, nous devons conserver le rapport en cache pendant une période déterminée. Le rapport ne sera désormais plus mis à jour en temps réel, mais cette solution nous permettra de servir des rapports très récents de manière quasi instantanée.
 
-Dans `orders/commands/read_order.py`, à la fin de la méthode `get_highest_spending_users_redis`, stockez le rapport dans le cache avant de le retourner au contrôleur :
+Dans `orders/queries/read_order.py`, à la fin de la méthode `get_highest_spending_users_redis`, stockez le rapport dans le cache avant de le retourner au contrôleur :
 ```python
 r.hset('reports:highest_spending_users', mapping=result)
 r.expire("reports:highest_spending_users", 60) # invalider le cache toutes les 60 secondes
