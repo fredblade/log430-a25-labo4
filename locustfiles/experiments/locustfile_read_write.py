@@ -10,21 +10,25 @@ class FlaskAPIUser(HttpUser):
     # Temps d'attente entre les requêtes (1 à 3 secondes)
     wait_time = between(1, 3)
     
-    # Proportion d'exécution 1:1:1, ce qui signifie : 1/3, 1/3, 1/3 (30 % des appels à chacun)
+    # Proportion d'exécution 1:1:1, ce qui donne 66% lectures (2 méthodes) et 33% écritures (1 méthode)
     @task(1) 
     def orders(self):
         """Test POST /orders endpoint (write)"""
         # TODO: ajoutez des IDs aléatoires de 1-3
+        user_id = random.randint(1, 3)
+        product_id = random.randint(1, 4)
+        quantity = random.randint(1, 5)
+        
         mock_order = {
-            "user_id": 0,
-            "items": [{"product_id": 0, "quantity": 1}] 
+            "user_id": user_id,
+            "items": [{"product_id": product_id, "quantity": quantity}] 
         }   
 
         # Ajouter aléatoirement plusiers articles (30 % des fois)
         if random.randint(1, 10) <= 3:
             # TODO: ajoutez des IDs aléatoires de 1-4
-            mock_order["items"].append({"product_id": 0, "quantity": 1})
-            mock_order["items"].append({"product_id": 1, "quantity": 2})
+            mock_order["items"].append({"product_id": random.randint(1, 4), "quantity": random.randint(1, 3)})
+            mock_order["items"].append({"product_id": random.randint(1, 4), "quantity": random.randint(1, 3)})
 
         with self.client.post("/orders", 
                             json=mock_order, 
