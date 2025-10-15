@@ -7,9 +7,16 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
+
+      - name: Clean workspace
+        run: |
+          sudo chmod -R 777 "${GITHUB_WORKSPACE}" 2>/dev/null || true
+          sudo rm -rf "${GITHUB_WORKSPACE}"/*
+          sudo rm -rf "${GITHUB_WORKSPACE}"/.[!.]* 2>/dev/null || true
       - uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -21,15 +28,24 @@ jobs:
 
       - name: Creer fichier .env
         run: |
-          echo "DB_HOST=127.0.0.1" >> .env
+          echo "DB_HOST=mysql" >> .env
           echo "DB_PORT=3306" >> .env
-          echo "DB_NAME=labo02_db" >> .env
-          echo "DB_USER=labo02" >> .env
-          echo "DB_PASS=labo02" >> .env
-          echo "REDIS_HOST=127.0.0.1" >> .env
+          echo "DB_NAME=labo04_db" >> .env
+          echo "DB_USER=labo04" >> .env
+          echo "DB_PASS=labo04" >> .env
+          echo "REDIS_HOST=redis" >> .env
           echo "REDIS_PORT=6379" >> .env
           echo "REDIS_DB=0" >> .env
 
+      - name: Create Docker network
+        run: docker network create labo04-network || true
+
+      - name: Start Docker containers
+        run: docker compose up -d
+
+      - name: Wait for services to be ready
+        run: sleep 15
+
       - name: Run tests
         working-directory: src
-        run: echo "Call pytest command here!"
+        run: docker exec store_manager python -m pytest -v
