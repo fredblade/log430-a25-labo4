@@ -1,6 +1,5 @@
 services:
   store_manager:
-    container_name: store_manager
     build: .
     volumes:
       - .:/app
