@@ -16,7 +16,6 @@ services:
       replicas: 3
 
   locust:
-     container_name: locust
      image: locustio/locust
      ports:
        - "8089:8089"
@@ -48,7 +47,6 @@ services:
       - store_manager
 
   mysql:
-    container_name: mysql
     image: mysql:8
     restart: unless-stopped
     environment:
@@ -65,7 +63,6 @@ services:
       - ./db-init:/docker-entrypoint-initdb.d
 
   redis:
-    container_name: redis
     image: redis:7
     restart: unless-stopped
     networks:
@@ -74,7 +71,6 @@ services:
       - "6379:6379"
 
   nginx:
-    container_name: nginx
     image: nginx:latest
     ports:
       - "8080:80"
