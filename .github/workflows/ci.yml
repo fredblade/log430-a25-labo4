@@ -48,4 +48,4 @@ jobs:
 
       - name: Run tests
         working-directory: src
-        run: docker exec store_manager-1 python -m pytest -v
+        run: docker exec log430-a25-labo4-store_manager-1 python -m pytest -v
